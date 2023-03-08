@@ -1,33 +1,24 @@
+<?php
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+?>
 <head>
 <title>Texture Manipulation</title>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 </head>
 <body>
 <form action=textureMenu.php method=POST enctype="multipart/form-data">
 
-Select the image to manipulate here and it will show up in the bottom frame <select name=image onchange="window.open('modifyTexture.php?filename='+this.value,'bottom')">
-<?php
+<?php	
 session_start();
+
+$message = "";
 
 if (isset($_SESSION['message']) && $_SESSION['message']) {
 	echo '<p>Session Message: '.$_SESSION['message'].'</p>';
 	unset($_SESSION['message']);
 }
 
-$message = "nothing happened";
-
-// Get a listing of the files we can modify
-$dh = opendir("textures");
-while (false !== ($file = readdir($dh))) {
-	if (!preg_match('/^\./', $file)) {
-		$file = preg_replace('/\..*/', '', $file);
-		print "<option>$file</option>\n";
-	}
-}
-closedir($dh);
-?>
-</select>
-<?php	
 if (isset($_FILES['filename']) && $_FILES['filename']['error'] === UPLOAD_ERR_OK) {
 	// get details of the uploaded file
 	$fileTmpPath = $_FILES['filename']['tmp_name'];
@@ -99,6 +90,19 @@ if (isset($_FILES['filename']) && $_FILES['filename']['error'] === UPLOAD_ERR_OK
 
 $_SESSION['message'] = $message;
 ?>
+Select the image to manipulate here and it will show up in the bottom frame <select name=image onchange="window.open('modifyTexture.php?filename='+this.value,'bottom')" onfocus="window.open('modifyTexture.php?filename='+this.value,'bottom')">
+<?php
+// Get a listing of the files we can modify
+$dh = opendir("textures");
+while (false !== ($file = readdir($dh))) {
+	if (!preg_match('/^\./', $file)) {
+		$file = preg_replace('/\..*/', '', $file);
+		print "<option>$file</option>\n";
+	}
+}
+closedir($dh);
+?>
+</select>
 	<p>Or upload a new texture to work with
 	<input type=file id=texture name=filename>
 	<input type=submit name=submit value="Start Upload"></p>
